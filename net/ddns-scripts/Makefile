@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ddns-scripts
 PKG_VERSION:=2.8.2
-PKG_RELEASE:=43
+PKG_RELEASE:=44
 
 PKG_LICENSE:=GPL-2.0
 
@@ -67,6 +67,15 @@ define Package/ddns-scripts-utils/description
   Dynamic DNS Client utility scripts for config files
 endef
 
+define Package/ddns-scripts-aliyun
+  $(call Package/ddns-scripts/Default)
+  TITLE:=Extension for aliyun.com DNS API
+  DEPENDS:=ddns-scripts +curl +openssl-util
+endef
+
+define Package/ddns-scripts-aliyun/description
+  Dynamic DNS Client scripts extension for aliyun.com API
+endef
 
 define Package/ddns-scripts-luadns
   $(call Package/ddns-scripts/Default)
@@ -353,6 +362,7 @@ define Package/ddns-scripts-services/install
 		$(1)/usr/share/ddns/default
 
 	# Remove special services
+	rm $(1)/usr/share/ddns/default/aliyun.com.json
 	rm $(1)/usr/share/ddns/default/luadns.com-v1.json
 	rm $(1)/usr/share/ddns/default/cloudflare.com-v4.json
 	rm $(1)/usr/share/ddns/default/cloud.google.com-v1.json
@@ -380,6 +390,23 @@ define Package/ddns-scripts-utils/install
 		$(1)/usr/lib/ddns/getlocalip.sh
 endef
 
+define Package/ddns-scripts-aliyun/install
+	$(INSTALL_DIR) $(1)/usr/lib/ddns
+	$(INSTALL_BIN) ./files/usr/lib/ddns/update_aliyun_com.sh \
+		$(1)/usr/lib/ddns
+
+	$(INSTALL_DIR) $(1)/usr/share/ddns/default
+	$(INSTALL_DATA) ./files/usr/share/ddns/default/aliyun.com.json \
+		$(1)/usr/share/ddns/default/
+endef
+
+define Package/ddns-scripts-aliyun/prerm
+#!/bin/sh
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	/etc/init.d/ddns stop
+fi
+exit 0
+endef
 
 define Package/ddns-scripts-luadns/install
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
@@ -688,6 +715,7 @@ endef
 $(eval $(call BuildPackage,ddns-scripts))
 $(eval $(call BuildPackage,ddns-scripts-services))
 $(eval $(call BuildPackage,ddns-scripts-utils))
+$(eval $(call BuildPackage,ddns-scripts-aliyun))
 $(eval $(call BuildPackage,ddns-scripts-luadns))
 $(eval $(call BuildPackage,ddns-scripts-cloudflare))
 $(eval $(call BuildPackage,ddns-scripts-gcp))
