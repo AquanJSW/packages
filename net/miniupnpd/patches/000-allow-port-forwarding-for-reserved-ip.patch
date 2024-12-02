@@ -1,0 +1,24 @@
+diff --git a/miniupnpd.c b/miniupnpd.c
+index 34b2eda..f325156 100644
+--- a/miniupnpd.c
++++ b/miniupnpd.c
+@@ -2263,7 +2263,8 @@ main(int argc, char * * argv)
+ 			syslog(LOG_INFO, "You are probably behind NAT, enable option ext_perform_stun=yes to detect public IP address");
+ 			syslog(LOG_INFO, "Or use ext_ip= / -o option to declare public IP address");
+ 			syslog(LOG_INFO, "Public IP address is required by UPnP/PCP/PMP protocols and clients do not work without it");
+-			disable_port_forwarding = 1;
++			syslog(LOG_INFO, "Force port forwarding due to hacking on pos.0");
++			disable_port_forwarding = 0;
+ 		}
+ 	}
+ 
+@@ -2555,7 +2556,8 @@ main(int argc, char * * argv)
+ 						syslog(LOG_INFO, "You are probably behind NAT, enable option ext_perform_stun=yes to detect public IP address");
+ 						syslog(LOG_INFO, "Or use ext_ip= / -o option to declare public IP address");
+ 						syslog(LOG_INFO, "Public IP address is required by UPnP/PCP/PMP protocols and clients do not work without it");
+-						disable_port_forwarding = 1;
++						syslog(LOG_INFO, "Force port forwarding due to hacking on pos.1");
++						disable_port_forwarding = 0;
+ 					} else if (disable_port_forwarding && !reserved) {
+ 						syslog(LOG_INFO, "Public IP address %s on ext interface %s: Port forwarding is enabled", if_addr, ext_if_name);
+ 						disable_port_forwarding = 0;
